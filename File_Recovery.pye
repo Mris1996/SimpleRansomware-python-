@@ -1,0 +1,53 @@
+from base64 import b64decode 
+from Crypto.Cipher import AES 
+from Crypto.Util.Padding import unpad
+import os
+#handles and locates "key.txt"
+keyfile=''
+while True:
+	try:
+		print('Locate \"key.txt\":')
+		keyfile=input()
+		file_in = open(keyfile, "r") 
+		break
+		break
+	except:
+		print("No such file found")
+#grabs iv and key from the "key.txt" file and decodes all the files in the location. Does exception handling as well for any error regarding the "key.txt" file
+try:
+	Lines = file_in.readlines() 
+	count = 0
+	key = ''
+	iv = ''
+	for line in Lines: 
+		if count==0:
+			iv=line.strip()
+		if count==1:
+			key=line.strip()
+		count = count + 1
+	path = os.path.dirname(os.path.realpath(__file__))
+	files = os.listdir(path)
+	files_txt = [i for i in files if i.endswith('.enc')]
+
+
+	iv = b64decode(iv)
+	key = b64decode(key) 
+	for files in files_txt:
+		f = open(files, "rb")
+		data = f.read()
+		ct = b64decode(data) 
+		cipher = AES.new(key, AES.MODE_CBC, iv) 
+		pt = unpad(cipher.decrypt(ct), AES.block_size)
+		f.close() 
+		os.remove(files)
+		f = open(files[:-4]+".txt", "wb")
+		f.write(pt)
+		f.close()
+	
+except:
+	print("Key.txt does not work.Get the correct key.txt and try again!")
+	exit()
+os.remove(keyfile)
+print('Your files are decrypted! Good luck and good bye!')
+
+
